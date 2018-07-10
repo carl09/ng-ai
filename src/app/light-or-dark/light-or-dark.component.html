@@ -1,0 +1,12 @@
+<p>
+  loss {{ status$ | async | json }}
+</p>
+<app-color-picker (change)="colorChanged($event)" [color]="newColor"></app-color-picker>
+
+<div *ngIf="color" class="guess-wrapper">
+  <div class="guess-message">The AI thinks {{ guessLabel }} is best</div>
+  <div [style.color]="guessLabel" [style.backgroundColor]="color" class="guess-label">{{ guessLabel }}</div>
+  <div class="guess-message">Is the text easy to read?</div>
+  <a style="color: black;" [style.backgroundColor]="color" class="guess-button" (click)="updateAI(colorCode, false)">{{ guessLabel === 'black' ? 'Yes' : 'No' }}</a>
+  <a style="color: white;" [style.backgroundColor]="color" class="guess-button" (click)="updateAI(colorCode, true)">{{ guessLabel === 'white' ? 'Yes' : 'No' }}</a>
+</div>

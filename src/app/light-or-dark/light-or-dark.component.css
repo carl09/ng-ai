@@ -1,0 +1,23 @@
+
+.guess-wrapper{
+    width: 200px;
+    margin-top: 20px;
+}
+
+.guess-label{
+    font-size: 26px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.guess-button{
+    margin-left: 10px;
+    font-size: 18px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.guess-message {
+    padding-bottom: 15px;
+}
