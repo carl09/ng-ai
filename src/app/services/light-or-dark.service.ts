@@ -3,28 +3,6 @@ import * as tf from '@tensorflow/tfjs';
 import { Observable, Subject } from 'rxjs';
 import { Observer } from 'rxjs/internal/types';
 
-// import Worker from 'worker-loader!./worker';
-declare const require: any;
-
-// tslint:disable-next-line:no-implicit-dependencies
-// import Worker from 'worker-loader!?inline=./worker';
-// import Worker = require("worker-loader?publicPath=scripts/&name=worker.js!./worker");
-
-// import workerScript from 'raw-loader!./worker.js';
-// tslint:disable-next-line:no-implicit-dependencies no-var-requires
-const workerScript = require('raw-loader!./worker.js');
-
-// declare module 'worker-loader!*' {
-//   class WebpackWorker extends Worker {
-//     constructor();
-//   }
-
-//   export default WebpackWorker;
-// }
-
-// // tslint:disable-next-line:no-var-requires
-// const Worker = require('worker-loader!./worker');
-
 export interface TrainingData {
   input: RGB;
   output?: {
@@ -56,14 +34,11 @@ export class LightOrDarkService {
   private training$: Subject<TrainingProcess> = new Subject();
 
   constructor() {
-    const worker = new Worker(
-      window.URL.createObjectURL(new Blob([workerScript])),
-    );
-
-    // const worker = new Worker();
-    worker.onmessage = event => {
-      console.log('help');
-    };
+    // const worker = new Worker('assets/light-or-dark.worker.js')
+    // // const worker = new Worker();
+    // worker.onmessage = event => {
+    //   console.log('help');
+    // };
   }
 
   public async load() {

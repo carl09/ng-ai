@@ -1,6 +1,6 @@
 import * as tf from '@tensorflow/tfjs';
 
-// const ctx: Worker = self as any;
+const ctx: Worker = self as any;
 
 function createAndTrain() {
   // importScripts('@tensorflow/tfjs');

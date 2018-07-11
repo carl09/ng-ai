@@ -1,0 +1,13 @@
+import typescript from 'rollup-plugin-typescript2';
+import resolve from 'rollup-plugin-node-resolve';
+import commonjs from 'rollup-plugin-commonjs';
+
+export default {
+  input: 'src/app/workers/light-or-dark.worker.ts',
+  output: {
+    file: 'src/assets/light-or-dark.worker.js',
+    format: 'umd',
+  },
+  sourcemap: true,
+  plugins: [typescript(), resolve({ jsnext: true }), commonjs()],
+};
