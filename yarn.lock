@@ -1248,6 +1248,10 @@ chrome-trace-event@^0.1.1:
   version "0.1.3"
   resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/chrome-trace-event/-/chrome-trace-event-0.1.3.tgz#d395af2d31c87b90a716c831fe326f69768ec084"
 
+ci-info@^1.0.0:
+  version "1.1.3"
+  resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/ci-info/-/ci-info-1.1.3.tgz#710193264bb05c77b8c90d02f5aaf22216a667b2"
+
 cipher-base@^1.0.0, cipher-base@^1.0.1, cipher-base@^1.0.3:
   version "1.0.4"
   resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/cipher-base/-/cipher-base-1.0.4.tgz#8760e4ecc272f4c363532f926d874aae2c1397de"
@@ -1319,16 +1323,16 @@ code-point-at@^1.0.0:
   version "1.1.0"
   resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
 
-codelyzer@~4.2.1:
-  version "4.2.1"
-  resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/codelyzer/-/codelyzer-4.2.1.tgz#d56eaacefca7e8138aac0a630e484bdb09988544"
+codelyzer@^4.0.2, codelyzer@^4.4.2:
+  version "4.4.2"
+  resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/codelyzer/-/codelyzer-4.4.2.tgz#af11fed6ddf9362ed5b174495467fb7315306fb1"
   dependencies:
     app-root-path "^2.0.1"
     css-selector-tokenizer "^0.7.0"
     cssauron "^1.4.0"
     semver-dsl "^1.0.1"
-    source-map "^0.5.6"
-    sprintf-js "^1.0.3"
+    source-map "^0.5.7"
+    sprintf-js "^1.1.1"
 
 collection-visit@^1.0.0:
   version "1.0.0"
@@ -2164,6 +2168,18 @@ execa@^0.7.0:
     signal-exit "^3.0.0"
     strip-eof "^1.0.0"
 
+execa@^0.8.0:
+  version "0.8.0"
+  resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/execa/-/execa-0.8.0.tgz#d8d76bbc1b55217ed190fd6dd49d3c774ecfc8da"
+  dependencies:
+    cross-spawn "^5.0.1"
+    get-stream "^3.0.0"
+    is-stream "^1.1.0"
+    npm-run-path "^2.0.0"
+    p-finally "^1.0.0"
+    signal-exit "^3.0.0"
+    strip-eof "^1.0.0"
+
 exit@^0.1.2:
   version "0.1.2"
   resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/exit/-/exit-0.1.2.tgz#0632638f8d877cc82107d30a0fff1a17cba1cd0c"
@@ -2938,6 +2954,14 @@ https-proxy-agent@^2.2.1:
     agent-base "^4.1.0"
     debug "^3.1.0"
 
+husky@^0.14.3:
+  version "0.14.3"
+  resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/husky/-/husky-0.14.3.tgz#c69ed74e2d2779769a17ba8399b54ce0b63c12c3"
+  dependencies:
+    is-ci "^1.0.10"
+    normalize-path "^1.0.0"
+    strip-indent "^2.0.0"
+
 iconv-lite@0.4.19:
   version "0.4.19"
   resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/iconv-lite/-/iconv-lite-0.4.19.tgz#f7468f60135f5e5dad3399c0a81be9a1603a082b"
@@ -2962,7 +2986,7 @@ ignore-walk@^3.0.1:
   dependencies:
     minimatch "^3.0.4"
 
-ignore@^3.3.5:
+ignore@^3.3.5, ignore@^3.3.7:
   version "3.3.10"
   resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/ignore/-/ignore-3.3.10.tgz#0a97fb876986e8081c631160f8f9f389157f0043"
 
@@ -3077,6 +3101,12 @@ is-builtin-module@^1.0.0:
 is-callable@^1.1.1, is-callable@^1.1.3:
   version "1.1.4"
   resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/is-callable/-/is-callable-1.1.4.tgz#1e1adf219e1eeb684d691f9d6a05ff0d30a24d75"
+
+is-ci@^1.0.10:
+  version "1.1.0"
+  resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/is-ci/-/is-ci-1.1.0.tgz#247e4162e7860cebbdaf30b774d6b0ac7dcfe7a5"
+  dependencies:
+    ci-info "^1.0.0"
 
 is-data-descriptor@^0.1.4:
   version "0.1.4"
@@ -3647,7 +3677,7 @@ loader-utils@^0.2.16:
     json5 "^0.5.0"
     object-assign "^4.0.1"
 
-loader-utils@^1.0.1, loader-utils@^1.0.2, loader-utils@^1.1.0:
+loader-utils@^1.0.0, loader-utils@^1.0.1, loader-utils@^1.0.2, loader-utils@^1.1.0:
   version "1.1.0"
   resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/loader-utils/-/loader-utils-1.1.0.tgz#c98aef488bcceda2ffb5e2de646d6a754429f5cd"
   dependencies:
@@ -3991,6 +4021,10 @@ move-concurrently@^1.0.1:
     rimraf "^2.5.4"
     run-queue "^1.0.3"
 
+mri@^1.1.0:
+  version "1.1.1"
+  resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/mri/-/mri-1.1.1.tgz#85aa26d3daeeeedf80dc5984af95cc5ca5cad9f1"
+
 ms@0.7.1:
   version "0.7.1"
   resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/ms/-/ms-0.7.1.tgz#9cd13c03adbff25b65effde7ce864ee952017098"
@@ -4169,6 +4203,10 @@ normalize-package-data@^2.3.2, normalize-package-data@^2.3.4, "normalize-package
     is-builtin-module "^1.0.0"
     semver "2 || 3 || 4 || 5"
     validate-npm-package-license "^3.0.1"
+
+normalize-path@^1.0.0:
+  version "1.0.0"
+  resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/normalize-path/-/normalize-path-1.0.0.tgz#32d0e472f91ff345701c15a8311018d3b0a90379"
 
 normalize-path@^2.0.0, normalize-path@^2.0.1, normalize-path@^2.1.1:
   version "2.1.1"
@@ -4675,12 +4713,26 @@ preserve@^0.2.0:
   version "0.2.0"
   resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/preserve/-/preserve-0.2.0.tgz#815ed1f6ebc65926f865b310c0713bcb3315ce4b"
 
+prettier@^1.13.7:
+  version "1.13.7"
+  resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/prettier/-/prettier-1.13.7.tgz#850f3b8af784a49a6ea2d2eaa7ed1428a34b7281"
+
 pretty-error@^2.0.2:
   version "2.1.1"
   resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/pretty-error/-/pretty-error-2.1.1.tgz#5f4f87c8f91e5ae3f3ba87ab4cf5e03b1a17f1a3"
   dependencies:
     renderkid "^2.0.1"
     utila "~0.4"
+
+pretty-quick@^1.6.0:
+  version "1.6.0"
+  resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/pretty-quick/-/pretty-quick-1.6.0.tgz#afc3591eb5c4cf37614a305d489a8a40e57c9258"
+  dependencies:
+    chalk "^2.3.0"
+    execa "^0.8.0"
+    find-up "^2.1.0"
+    ignore "^3.3.7"
+    mri "^1.1.0"
 
 process-nextick-args@~1.0.6:
   version "1.0.7"
@@ -4873,7 +4925,7 @@ raw-body@2.3.3:
     iconv-lite "0.4.23"
     unpipe "1.0.0"
 
-raw-loader@^0.5.1:
+raw-loader@0.5.1, raw-loader@^0.5.1:
   version "0.5.1"
   resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/raw-loader/-/raw-loader-0.5.1.tgz#0c3d0beaed8a01c966d9787bf778281252a979aa"
 
@@ -5632,7 +5684,7 @@ split-string@^3.0.1, split-string@^3.0.2:
   dependencies:
     extend-shallow "^3.0.0"
 
-sprintf-js@^1.0.3:
+sprintf-js@^1.1.1:
   version "1.1.1"
   resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/sprintf-js/-/sprintf-js-1.1.1.tgz#36be78320afe5801f6cea3ee78b6e5aab940ea0c"
 
@@ -5780,6 +5832,10 @@ strip-indent@^1.0.1:
   resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/strip-indent/-/strip-indent-1.0.1.tgz#0c7962a6adefa7bbd4ac366460a638552ae1a0a2"
   dependencies:
     get-stdin "^4.0.1"
+
+strip-indent@^2.0.0:
+  version "2.0.0"
+  resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/strip-indent/-/strip-indent-2.0.0.tgz#5ef8db295d01e6ed6cbf7aab96998d7822527b68"
 
 strip-json-comments@~2.0.1:
   version "2.0.1"
@@ -6000,9 +6056,20 @@ tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0:
   version "1.9.3"
   resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/tslib/-/tslib-1.9.3.tgz#d7e4dd79245d85428c4d7e4822a79917954ca286"
 
-tslint@~5.9.1:
-  version "5.9.1"
-  resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/tslint/-/tslint-5.9.1.tgz#1255f87a3ff57eb0b0e1f0e610a8b4748046c9ae"
+tslint-angular@^1.1.2:
+  version "1.1.2"
+  resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/tslint-angular/-/tslint-angular-1.1.2.tgz#5ce7020968e3b9dc7a40b6d15dadd6da34787309"
+  dependencies:
+    codelyzer "^4.0.2"
+    tslint "^5.8.0"
+
+tslint-config-prettier@^1.13.0:
+  version "1.13.0"
+  resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/tslint-config-prettier/-/tslint-config-prettier-1.13.0.tgz#189e821931ad89e0364e4e292d5c44a14e90ecd6"
+
+tslint@^5.10.0, tslint@^5.8.0:
+  version "5.10.0"
+  resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/tslint/-/tslint-5.10.0.tgz#11e26bccb88afa02dd0d9956cae3d4540b5f54c3"
   dependencies:
     babel-code-frame "^6.22.0"
     builtin-modules "^1.1.1"
@@ -6485,6 +6552,13 @@ worker-farm@^1.5.2:
   resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/worker-farm/-/worker-farm-1.6.0.tgz#aecc405976fab5a95526180846f0dba288f3a4a0"
   dependencies:
     errno "~0.1.7"
+
+worker-loader@2.0.0:
+  version "2.0.0"
+  resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/worker-loader/-/worker-loader-2.0.0.tgz#45fda3ef76aca815771a89107399ee4119b430ac"
+  dependencies:
+    loader-utils "^1.0.0"
+    schema-utils "^0.4.0"
 
 wrap-ansi@^2.0.0:
   version "2.1.0"

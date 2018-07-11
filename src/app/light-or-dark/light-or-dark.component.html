@@ -1,6 +1,9 @@
 <p>
   loss {{ status$ | async | json }}
 </p>
+
+<button (click)="saveModel()">Save</button>
+
 <app-color-picker (change)="colorChanged($event)" [color]="newColor"></app-color-picker>
 
 <div *ngIf="color" class="guess-wrapper">

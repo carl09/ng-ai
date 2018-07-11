@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import * as tf from '@tensorflow/tfjs';
-import { ModelFitConfig, CustomCallbackConfig, Logs, Tensor, Rank } from '@tensorflow/tfjs';
-import { take } from 'rxjs/operators';
-
-import * as tinycolor_ from 'tinycolor2';
-import { TrainingData, RGB, LightOrDarkService, TrainingProcess } from '../services/light-or-dark.service';
 import { Observable } from 'rxjs';
+import { take } from 'rxjs/operators';
+import * as tinycolor_ from 'tinycolor2';
+import {
+  LightOrDarkService,
+  RGB,
+  TrainingData,
+  TrainingProcess,
+} from '../services/light-or-dark.service';
 const tinycolor: tinycolor = (tinycolor_ as any).default || tinycolor_;
 
 @Component({
@@ -35,7 +37,7 @@ export class LightOrDarkComponent implements OnInit {
     if (data) {
       this.trainData = JSON.parse(data) || [];
       this.lightOrDarkService
-        .train(this.trainData)
+        .train(10, this.trainData)
         .pipe(take(1))
         .subscribe(() => {
           this.newColor = this.getRandomRgb();
@@ -80,13 +82,17 @@ export class LightOrDarkComponent implements OnInit {
     console.log({ data });
     this.trainData.push(data);
     this.lightOrDarkService
-      .train(this.trainData)
+      .train(10, this.trainData)
       .pipe(take(1))
       .subscribe(() => {
         localStorage.setItem('trainData', JSON.stringify(this.trainData));
         this.newColor = this.getRandomRgb();
-        this.colorChanged(this.getRandomRgb());
+        this.colorChanged(this.newColor);
       });
+  }
+
+  public saveModel() {
+    this.lightOrDarkService.save();
   }
 
   private getRandomRgb() {

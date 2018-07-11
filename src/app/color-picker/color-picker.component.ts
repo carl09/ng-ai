@@ -4,12 +4,12 @@ import {
   ElementRef,
   EventEmitter,
   Input,
+  OnChanges,
   OnDestroy,
   OnInit,
   Output,
-  ViewChild,
-  OnChanges,
   SimpleChanges,
+  ViewChild,
 } from '@angular/core';
 import { Color, ColorPickerInstance, irojs, rgb } from './iro';
 
@@ -45,12 +45,15 @@ export class ColorPickerComponent implements OnInit, OnDestroy, OnChanges {
 
     const c = new iro.Color(inputColor);
 
-    this.colorPickerInstance = new iro.ColorPicker(this.colorPickerContainer.nativeElement, {
-      color: c.hsl,
-      width: 200,
-      height: 200,
-      padding: 0,
-    });
+    this.colorPickerInstance = new iro.ColorPicker(
+      this.colorPickerContainer.nativeElement,
+      {
+        color: c.hsl,
+        width: 200,
+        height: 200,
+        padding: 0,
+      },
+    );
 
     this.lastColor = c.hexString;
 
@@ -60,8 +63,10 @@ export class ColorPickerComponent implements OnInit, OnDestroy, OnChanges {
 
   public ngOnChanges(changes: SimpleChanges) {
     if (changes.color.currentValue) {
-        const color = new iro.Color(changes.color.currentValue);
-      this.colorPickerInstance.color.set(color.rgb);
+      const color = new iro.Color(changes.color.currentValue);
+      this.lastColor = color.hexString;
+      this.setInput(color.rgb);
+      // this.colorPickerInstance.color.set(color.rgb);
     }
   }
 

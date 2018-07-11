@@ -1,8 +1,29 @@
 import { Injectable } from '@angular/core';
 import * as tf from '@tensorflow/tfjs';
-import { ModelFitConfig, CustomCallbackConfig, Logs, Tensor } from '@tensorflow/tfjs';
+import { Observable, Subject } from 'rxjs';
 import { Observer } from 'rxjs/internal/types';
-import { Subject, Observable } from 'rxjs';
+
+// import Worker from 'worker-loader!./worker';
+declare const require: any;
+
+// tslint:disable-next-line:no-implicit-dependencies
+// import Worker from 'worker-loader!?inline=./worker';
+// import Worker = require("worker-loader?publicPath=scripts/&name=worker.js!./worker");
+
+// import workerScript from 'raw-loader!./worker.js';
+// tslint:disable-next-line:no-implicit-dependencies no-var-requires
+const workerScript = require('raw-loader!./worker.js');
+
+// declare module 'worker-loader!*' {
+//   class WebpackWorker extends Worker {
+//     constructor();
+//   }
+
+//   export default WebpackWorker;
+// }
+
+// // tslint:disable-next-line:no-var-requires
+// const Worker = require('worker-loader!./worker');
 
 export interface TrainingData {
   input: RGB;
@@ -34,22 +55,37 @@ export class LightOrDarkService {
   private learningRate = 0.1;
   private training$: Subject<TrainingProcess> = new Subject();
 
-  public load() {
+  constructor() {
+    const worker = new Worker(
+      window.URL.createObjectURL(new Blob([workerScript])),
+    );
+
+    // const worker = new Worker();
+    worker.onmessage = event => {
+      console.log('help');
+    };
+  }
+
+  public async load() {
+    // const loadedModel = await tf.loadModel('localstorage://my-model-1');
+
     this.model = tf.sequential();
-    this.model.add(tf.layers.dense({ units: 8, inputDim: 3, activation: 'sigmoid' }));
+    this.model.add(
+      tf.layers.dense({ units: 8, inputDim: 3, activation: 'sigmoid' }),
+    );
     this.model.add(tf.layers.dense({ units: 2, activation: 'softmax' }));
 
-    const optimizer = tf.train.sgd(this.learningRate);
+    const modelOptimizer = tf.train.sgd(this.learningRate);
     this.model.compile({
       loss: 'categoricalCrossentropy',
-      optimizer: optimizer,
+      optimizer: modelOptimizer,
     });
   }
 
   public guess(color: RGB): Observable<boolean> {
     const xs = tf.tensor2d([[color.r, color.g, color.b]]);
 
-    const results = this.model.predict(xs) as Tensor;
+    const results = this.model.predict(xs) as tf.Tensor;
 
     return Observable.create((observer: Observer<boolean>) => {
       results
@@ -72,7 +108,7 @@ export class LightOrDarkService {
     return this.training$.asObservable();
   }
 
-  public train(trainData: TrainingData[]): Observable<void> {
+  public train(epochs: number, trainData: TrainingData[]): Observable<void> {
     if (trainData.length === 0) {
       return;
     }
@@ -96,24 +132,31 @@ export class LightOrDarkService {
 
     labels_ts.dispose();
 
-    const config: ModelFitConfig = {
-      epochs: 100,
+    const configCallbacks: tf.CustomCallbackConfig = {
+      onTrainBegin: tf.nextFrame,
+      // onTrainBegin: () => {
+      //   console.log('onTrainBegin');
+      //   return Promise.resolve();
+      // },
+      onTrainEnd: tf.nextFrame,
+      // onTrainEnd: () => {
+      //   console.log('onTrainEnd');
+      //   return Promise.resolve();
+      // },
+      onEpochEnd: (epoch: number, logs: tf.Logs) => {
+        // console.log('onEpochEnd', epoch, logs.loss);
+        this.training$.next({
+          stage: TrainingStage.InProcess,
+          loss: logs.loss,
+        });
+        return Promise.resolve();
+      },
+    };
+
+    const config: tf.ModelFitConfig = {
+      epochs,
       shuffle: true,
-      callbacks: {
-        onTrainBegin: () => {
-          console.log('onTrainBegin');
-        },
-        onTrainEnd: () => {
-          console.log('onTrainEnd');
-        },
-        onEpochEnd: (epoch: number, logs: Logs) => {
-          // console.log('onEpochEnd', epoch, logs.loss);
-          this.training$.next({
-            stage: TrainingStage.InProcess,
-            loss: logs.loss,
-          });
-        },
-      } as CustomCallbackConfig,
+      callbacks: configCallbacks,
     };
 
     return Observable.create((observer: Observer<void>) => {
@@ -123,4 +166,17 @@ export class LightOrDarkService {
       });
     });
   }
+
+  public async save() {
+    await this.model.save('downloads://light-or-dark-model');
+    // await this.model.save('localstorage://light-or-dark-model');
+  }
+}
+
+function fn2workerURL(fn) {
+  // const blob = new Blob(['(' + fn.toString() + ')()'], {
+  //   type: 'application/javascript',
+  // });
+  // return URL.createObjectURL(blob);
+  return URL.createObjectURL(new Blob([fn.toString()]));
 }
