@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { take } from 'rxjs/operators';
-import * as tinycolor_ from 'tinycolor2';
 import {
   LightOrDarkService,
   RGB,
   TrainingData,
   TrainingProcess,
 } from '../services/light-or-dark.service';
+
+import * as tinycolor_ from 'tinycolor2';
 const tinycolor: tinycolor = (tinycolor_ as any).default || tinycolor_;
 
 @Component({
@@ -29,27 +30,27 @@ export class LightOrDarkComponent implements OnInit {
   constructor(private lightOrDarkService: LightOrDarkService) {}
 
   ngOnInit() {
-    this.lightOrDarkService.load();
-
     this.status$ = this.lightOrDarkService.training();
 
-    const data = localStorage.getItem('trainData');
-    if (data) {
-      this.trainData = JSON.parse(data) || [];
-      this.lightOrDarkService
-        .train(10, this.trainData)
-        .pipe(take(1))
-        .subscribe(() => {
-          this.newColor = this.getRandomRgb();
-          this.colorChanged(this.newColor);
-        });
-    }
+    this.lightOrDarkService.load().then(() => {
+      const data = localStorage.getItem('trainData');
+      if (data) {
+        this.trainData = JSON.parse(data) || [];
+        this.lightOrDarkService
+          .train(10, this.trainData)
+          .pipe(take(1))
+          .subscribe(() => {
+            this.newColor = this.getRandomRgb();
+            this.colorChanged(this.newColor);
+          });
+      }
+    });
   }
 
   public colorChanged($event: any) {
     this.color = undefined;
 
-    const rgb = this.getRgb($event);
+    const rgb = tinycolor($event).toRgb();
 
     console.log('colorChanged', rgb);
 
@@ -86,7 +87,7 @@ export class LightOrDarkComponent implements OnInit {
       .pipe(take(1))
       .subscribe(() => {
         localStorage.setItem('trainData', JSON.stringify(this.trainData));
-        this.newColor = this.getRandomRgb();
+        this.newColor = tinycolor.random().toHexString();
         this.colorChanged(this.newColor);
       });
   }
@@ -96,23 +97,6 @@ export class LightOrDarkComponent implements OnInit {
   }
 
   private getRandomRgb() {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-  }
-
-  private getRgb(hex): RGB {
-    const result = tinycolor(hex).toRgb();
-
-    return result
-      ? {
-          r: Math.round(result.r / 2.55) / 100,
-          g: Math.round(result.g / 2.55) / 100,
-          b: Math.round(result.b / 2.55) / 100,
-        }
-      : null;
+    return tinycolor.random().toHexString();
   }
 }

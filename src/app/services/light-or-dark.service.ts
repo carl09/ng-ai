@@ -33,28 +33,28 @@ export class LightOrDarkService {
   private learningRate = 0.1;
   private training$: Subject<TrainingProcess> = new Subject();
 
-  constructor() {
-    // const worker = new Worker('assets/light-or-dark.worker.js')
-    // // const worker = new Worker();
-    // worker.onmessage = event => {
-    //   console.log('help');
-    // };
-  }
-
   public async load() {
     // const loadedModel = await tf.loadModel('localstorage://my-model-1');
 
-    this.model = tf.sequential();
-    this.model.add(
-      tf.layers.dense({ units: 8, inputDim: 3, activation: 'sigmoid' }),
-    );
-    this.model.add(tf.layers.dense({ units: 2, activation: 'softmax' }));
+    const foo = await tf.loadModel('assets/light-or-dark-model.json');
+
+    if (foo) {
+      this.model = foo as tf.Sequential;
+    } else {
+      this.model = tf.sequential();
+      this.model.add(
+        tf.layers.dense({ units: 8, inputDim: 3, activation: 'sigmoid' }),
+      );
+      this.model.add(tf.layers.dense({ units: 2, activation: 'softmax' }));
+    }
 
     const modelOptimizer = tf.train.sgd(this.learningRate);
     this.model.compile({
       loss: 'categoricalCrossentropy',
       optimizer: modelOptimizer,
     });
+
+    debugger;
   }
 
   public guess(color: RGB): Observable<boolean> {
