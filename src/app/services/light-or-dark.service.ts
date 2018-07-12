@@ -53,8 +53,6 @@ export class LightOrDarkService {
       loss: 'categoricalCrossentropy',
       optimizer: modelOptimizer,
     });
-
-    debugger;
   }
 
   public guess(color: RGB): Observable<boolean> {
