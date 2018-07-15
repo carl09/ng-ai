@@ -1,15 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { take } from 'rxjs/operators';
+import * as tinycolor from 'tinycolor2';
 import {
   LightOrDarkService,
   RGB,
   TrainingData,
   TrainingProcess,
 } from '../services/light-or-dark.service';
-
-import * as tinycolor_ from 'tinycolor2';
-const tinycolor: tinycolor = (tinycolor_ as any).default || tinycolor_;
 
 @Component({
   selector: 'app-light-or-dark',

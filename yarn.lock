@@ -257,9 +257,9 @@
     protobufjs "~6.8.6"
     url "~0.11.0"
 
-"@tensorflow/tfjs-core@0.12.3":
-  version "0.12.3"
-  resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/@tensorflow/tfjs-core/-/tfjs-core-0.12.3.tgz#970ba1af5191257df5ecbedfed9033f6e8395d2f"
+"@tensorflow/tfjs-core@0.12.4":
+  version "0.12.4"
+  resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/@tensorflow/tfjs-core/-/tfjs-core-0.12.4.tgz#39e6239617856fce82b41936f711f78190aa71bd"
   dependencies:
     seedrandom "~2.4.3"
 
@@ -268,11 +268,11 @@
   resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/@tensorflow/tfjs-layers/-/tfjs-layers-0.7.0.tgz#6bee18a220ece102a56be785cd1c67028f968a63"
 
 "@tensorflow/tfjs@^0.12.0":
-  version "0.12.1"
-  resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/@tensorflow/tfjs/-/tfjs-0.12.1.tgz#d1c394358f37a9c6ad048cca5fd122e19b16f527"
+  version "0.12.2"
+  resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/@tensorflow/tfjs/-/tfjs-0.12.2.tgz#fb48543f7afca7f3ee2d449d62e6145f42438ea3"
   dependencies:
     "@tensorflow/tfjs-converter" "0.5.1"
-    "@tensorflow/tfjs-core" "0.12.3"
+    "@tensorflow/tfjs-core" "0.12.4"
     "@tensorflow/tfjs-layers" "0.7.0"
 
 "@types/estree@0.0.39":
@@ -932,8 +932,8 @@ boom@2.x.x:
     hoek "2.x.x"
 
 bootstrap@^4.1.1:
-  version "4.1.1"
-  resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/bootstrap/-/bootstrap-4.1.1.tgz#3aec85000fa619085da8d2e4983dfd67cf2114cb"
+  version "4.1.2"
+  resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/bootstrap/-/bootstrap-4.1.2.tgz#aee2a93472e61c471fc79fb475531dcbc87de326"
 
 brace-expansion@^1.1.7:
   version "1.1.11"
@@ -5138,8 +5138,8 @@ run-queue@^1.0.0, run-queue@^1.0.3:
     aproba "^1.1.1"
 
 rxjs@^6.0.0:
-  version "6.2.1"
-  resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/rxjs/-/rxjs-6.2.1.tgz#246cebec189a6cbc143a3ef9f62d6f4c91813ca1"
+  version "6.2.2"
+  resolved "https://nintex.pkgs.visualstudio.com/_packaging/Nintex/npm/registry/rxjs/-/rxjs-6.2.2.tgz#eb75fa3c186ff5289907d06483a77884586e1cf9"
   dependencies:
     tslib "^1.9.0"
 

@@ -1,0 +1,6 @@
+<div class="alert alert-info" role="alert" [style.backgroundColor]="colorManage || selectedColor">
+    <span *ngIf="!colorManage">A simple info alert with <a href="#" class="alert-link" (click)="manage()">Manage</a>. Give it a click if you like.</span>
+    <span *ngIf="colorManage">
+        {{ contrast }} <button (click)="darker()">Darker</button><button (click)="lighter()">Lighter</button> | <button (click)="setTraining()">Training</button> <button (click)="cancel()">Cancel</button>
+    </span>
+</div>

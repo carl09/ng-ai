@@ -1,11 +1,15 @@
 <div style="width:600px; margin: auto;padding: 25px;" [style.backgroundColor]="color">
-    <div class="alert alert-success" role="alert">
+
+    <app-alert *ngFor="let a of alerts" [defaultColor]="a.defaultColor" [selectedColor]="a.selectedColor" [backgroundColor]="a.backgroundColor"
+        (updateColor)="setTraining($event)"></app-alert>
+
+    <!-- <div class="alert alert-success" role="alert">
         A simple success alert with
         <a href="#" class="alert-link">an example link</a>. Give it a click if you like.
     </div>
-    <div class="alert alert-danger" role="alert">
+    <div class="alert alert-danger" [style.backgroundColor]="colorDanger" role="alert">
         A simple danger alert with
-        <a href="#" class="alert-link">an example link</a>. Give it a click if you like.
+        <a href="#" class="alert-link" (click)="manage(alertDanger)">Manage</a>. Give it a click if you like.
     </div>
     <div class="alert alert-warning" role="alert">
         A simple warning alert with
@@ -15,4 +19,13 @@
         A simple info alert with
         <a href="#" class="alert-link">an example link</a>. Give it a click if you like.
     </div>
+
+    <app-alert [defaultColor]="alertDanger" [selectedColor]="colorDanger" [backgroundColor]="color" (updateColor)="setTraining($event)"></app-alert> -->
+
 </div>
+
+<button (click)="train()">Train</button>
+
+<p>
+    loss {{ status$ | async | json }}
+</p>
