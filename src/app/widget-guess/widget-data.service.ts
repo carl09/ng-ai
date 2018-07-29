@@ -59,7 +59,7 @@ export class WidgetDataService {
   }
 
   public addItem(item: IFormItem) {
-    this._items.push(item);
+    this._items.unshift(item);
     localStorage.setItem('WidgetDataServiceData', JSON.stringify(this._items));
   }
 }

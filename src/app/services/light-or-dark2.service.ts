@@ -1,70 +1,57 @@
 import { Injectable } from '@angular/core';
 import * as tf from '@tensorflow/tfjs';
 import * as tinycolor from 'tinycolor2';
-
-export interface TrainingData {
-  input: RGB;
-  output?: {
-    light?: number;
-    dark?: number;
-  };
-}
-
-export interface RGB {
-  r: number;
-  g: number;
-  b: number;
-}
-
-export enum TrainingStage {
-  InProcess,
-  Compleated,
-}
-
-export interface TrainingProcess {
-  stage: TrainingStage;
-  loss: number;
-}
+import { RGB, TrainingData } from './light-or-dark.service';
 
 @Injectable()
-export class LightOrDarkService {
+export class LightOrDarkService2 {
   private model: tf.Sequential;
   private learningRate = 0.1;
 
   public async load() {
     this.model = tf.sequential();
     this.model.add(
-      tf.layers.dense({
-        units: 16,
-        inputDim: 3,
+      tf.layers.conv1d({
+        inputShape: [3, 3],
+        kernelSize: 3,
+        filters: 8,
+        strides: 1,
         activation: 'relu',
+        kernelInitializer: 'varianceScaling',
       }),
     );
+
+    // this.model.add(tf.layers.maxPool1d({
+    //   poolSize: 2,
+    //   strides: 2
+    // }));
+
+    this.model.add(tf.layers.flatten());
+
+    // this.model.add(tf.layers.dense({units: 4, activation: 'relu'}));
 
     this.model.add(
-      tf.layers.dense({
-        units: 16,
-        activation: 'relu',
-      }),
+      tf.layers.dense({ units: 2, activation: 'softmax', name: 'dense1' }),
     );
 
-    this.model.add(tf.layers.dense({ units: 2, activation: 'softmax' }));
-
-    const modelOptimizer = tf.train.sgd(this.learningRate);
+    const modelOptimizer = tf.train.adam(this.learningRate); // sgd(this.learningRate);
 
     this.model.compile({
       loss: 'categoricalCrossentropy',
       optimizer: modelOptimizer,
       metrics: ['accuracy'],
     });
+
+    this.model.summary();
   }
 
   public async guess(color: RGB) {
-    const xs = tf.tensor2d([
+    console.log('guess');
+    const xs = tf.tensor3d([
       [
-        this.mapFromRbg(color.r),
-        this.mapFromRbg(color.g),
-        this.mapFromRbg(color.b),
+        [this.mapFromRbg(color.r), 0, 0],
+        [0, this.mapFromRbg(color.g), 0],
+        [0, 0, this.mapFromRbg(color.r)],
       ],
     ]);
 
@@ -76,16 +63,20 @@ export class LightOrDarkService {
   }
 
   public async guessList(color: string[]): Promise<number[]> {
-    const xs = tf.tensor2d(
+    console.log('guessList');
+    const xs = tf.tensor3d(
       color.map(x => {
         const c = tinycolor(x).toRgb();
         return [
-          this.mapFromRbg(c.r),
-          this.mapFromRbg(c.g),
-          this.mapFromRbg(c.b),
+          [this.mapFromRbg(c.r), 0, 0],
+          [0, this.mapFromRbg(c.g), 0],
+          [0, 0, this.mapFromRbg(c.r)],
         ];
       }),
     );
+
+    xs.print();
+    console.log(xs.shape);
 
     const results = this.model.predict(xs) as tf.Tensor;
 
@@ -104,6 +95,7 @@ export class LightOrDarkService {
     trainData: TrainingData[],
     callback: (epoch: number, logs: tf.Logs) => void,
   ) {
+    console.log('train');
     if (trainData.length === 0) {
       return;
     }
@@ -111,9 +103,9 @@ export class LightOrDarkService {
     // tf.tidy(() => {
     const colors = trainData.map(x => {
       return [
-        this.mapFromRbg(x.input.r),
-        this.mapFromRbg(x.input.g),
-        this.mapFromRbg(x.input.r),
+        [this.mapFromRbg(x.input.r), 0, 0],
+        [0, this.mapFromRbg(x.input.g), 0],
+        [0, 0, this.mapFromRbg(x.input.r)],
       ];
     });
 
@@ -121,7 +113,9 @@ export class LightOrDarkService {
       return x.output.dark ? 0 : 1;
     });
 
-    const xs = tf.tensor2d(colors);
+    const xs = tf.tensor3d(colors);
+
+    xs.print();
 
     const labels_ts = tf.tensor1d(labels, 'int32');
 
@@ -157,7 +151,6 @@ export class LightOrDarkService {
 
   public mapFromRbg(input: number) {
     return this.map(input, 0, 255, 0, 1);
-    // return input;
   }
 
   private map(

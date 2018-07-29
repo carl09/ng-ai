@@ -1,7 +1,4 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { Chart } from 'chart.js';
-import { from } from 'rxjs';
-import { map, take } from 'rxjs/operators';
 import * as tinycolor from 'tinycolor2';
 import { createGraphDefaults } from '../services/graph.utils';
 import {
@@ -9,11 +6,13 @@ import {
   RGB,
   TrainingData,
 } from '../services/light-or-dark.service';
+import { LightOrDarkService2 } from '../services/light-or-dark2.service';
 
 @Component({
   selector: 'app-light-or-dark',
   templateUrl: './light-or-dark.component.html',
   styleUrls: ['./light-or-dark.component.css'],
+  providers: [LightOrDarkService2],
 })
 export class LightOrDarkComponent implements OnInit {
   @ViewChild('canvas1') canvas1: ElementRef;
@@ -34,6 +33,7 @@ export class LightOrDarkComponent implements OnInit {
 
   private baseColors: string[] = [
     '#cccccc',
+    '#a40e3b',
     '#cc4146',
     '#ccc03d',
     '#cc62c3',
@@ -42,11 +42,19 @@ export class LightOrDarkComponent implements OnInit {
     '#8645cc',
     '#47a6cc',
     '#39cc40',
+    '#6c749f',
+    '#5622d1',
+    '#dba91a',
+    '#a1d656',
+    '#f58771',
   ];
 
   private trainData: TrainingData[] = [];
 
-  constructor(private lightOrDarkService: LightOrDarkService) {}
+  constructor(
+    private lightOrDarkService2: LightOrDarkService2,
+    private lightOrDarkService: LightOrDarkService,
+  ) {}
 
   public ngOnInit() {
     console.log('Oninit');
@@ -56,6 +64,12 @@ export class LightOrDarkComponent implements OnInit {
       borderColor: '#3cba9f',
       fill: false,
       label: 'accuracy',
+    });
+
+    this.chart1.data.datasets.push({
+      borderColor: '#6d30ae',
+      fill: false,
+      label: 'old accuracy',
     });
 
     this.chart1.update();
@@ -68,24 +82,37 @@ export class LightOrDarkComponent implements OnInit {
       label: 'loss',
     });
 
+    this.chart2.data.datasets.push({
+      borderColor: '#ff696d',
+      fill: false,
+      label: 'old loss',
+    });
+
     this.chart2.update();
 
-    this.lightOrDarkService.load().then(() => {
+    this.lightOrDarkService2.load().then(() => {
       const data = localStorage.getItem('trainData');
       if (data) {
         this.trainData = JSON.parse(data) || [];
-        from(
-          this.lightOrDarkService.train(100, this.trainData, (e, l) => {
+
+        this.lightOrDarkService2
+          .train(101, this.trainData, (e, l) => {
             this.updateGraph(e, l);
             this.updateDisplay();
-          }),
-        )
-          .pipe(take(1))
-          .subscribe(() => {
+          })
+          .then(() => {
             this.newColor = this.getRandomRgb();
             this.colorChanged(this.newColor);
             this.updateDisplay();
           });
+
+        this.lightOrDarkService.load().then(() => {
+          this.lightOrDarkService
+            .train(101, this.trainData, (e, l) => {
+              this.updateGraph(e, l, 1);
+            })
+            .then(() => {});
+        });
       } else {
         this.newColor = this.getRandomRgb();
         this.colorChanged(this.newColor);
@@ -101,17 +128,15 @@ export class LightOrDarkComponent implements OnInit {
 
     console.log('colorChanged', rgb);
 
-    from(this.lightOrDarkService.guess(rgb))
-      .pipe(take(1))
-      .subscribe(x => {
-        if (x) {
-          this.guessLabel = 'white';
-          console.log('light');
-        } else {
-          this.guessLabel = 'black';
-          console.log('dark');
-        }
-      });
+    this.lightOrDarkService2.guess(rgb).then(x => {
+      if (x) {
+        this.guessLabel = 'white';
+        console.log('light');
+      } else {
+        this.guessLabel = 'black';
+        console.log('dark');
+      }
+    });
 
     this.color = $event;
     this.colorCode = rgb;
@@ -134,7 +159,7 @@ export class LightOrDarkComponent implements OnInit {
     console.log({ data });
     this.trainData.push(data);
 
-    this.lightOrDarkService
+    this.lightOrDarkService2
       .train(10, this.trainData, (e, l) => this.updateGraph(e, l))
       .then(() => {
         localStorage.setItem('trainData', JSON.stringify(this.trainData));
@@ -142,10 +167,6 @@ export class LightOrDarkComponent implements OnInit {
         this.colorChanged(this.newColor);
         this.updateDisplay();
       });
-  }
-
-  public saveModel() {
-    this.lightOrDarkService.save();
   }
 
   private getRandomRgb() {
@@ -178,34 +199,27 @@ export class LightOrDarkComponent implements OnInit {
           .toHexString(),
       );
 
-      from(this.lightOrDarkService.guessList(colors))
-        .pipe(take(1))
-        .subscribe((r: number[]) => {
-          r.forEach((i, index) => {
-            this.guesslist[colors[index]] = i === 1 ? 'white' : 'black';
-          });
-          console.log(x);
-          // if (x) {
-          //   this.guessLabel = 'white';
-          //   console.log('light');
-          // } else {
-          //   this.guessLabel = 'black';
-          //   console.log('dark');
-          // }
+      this.lightOrDarkService2.guessList(colors).then((r: number[]) => {
+        r.forEach((i, index) => {
+          this.guesslist[colors[index]] = i === 1 ? 'white' : 'black';
         });
+        console.log(x);
+      });
 
       return colors;
     });
   }
 
-  private updateGraph(e, l) {
-    this.chart1.data.labels.push(e.toString());
-    this.chart2.data.labels.push(e.toString());
+  private updateGraph(e, l, num: number = 0) {
+    if (num === 0) {
+      this.chart1.data.labels.push(e.toString());
+      this.chart2.data.labels.push(e.toString());
+    }
 
     const acc = Math.round(l.acc * 100000) / 100000;
 
-    (this.chart1.data.datasets[0].data as number[]).push(acc);
-    (this.chart2.data.datasets[0].data as number[]).push(l.loss);
+    (this.chart1.data.datasets[num].data as number[]).push(acc);
+    (this.chart2.data.datasets[num].data as number[]).push(l.loss);
 
     this.chart1.update();
     this.chart2.update();
