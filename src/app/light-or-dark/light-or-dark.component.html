@@ -1,15 +1,29 @@
-<p>
-  loss {{ status$ | async | json }}
-</p>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col">
+      <!-- <button (click)="saveModel()">Save</button> -->
 
-<button (click)="saveModel()">Save</button>
+      <app-color-picker (change)="colorChanged($event)" [color]="newColor"></app-color-picker>
 
-<app-color-picker (change)="colorChanged($event)" [color]="newColor"></app-color-picker>
+      <div *ngIf="color" class="guess-wrapper">
+        <div class="guess-message">The AI thinks {{ guessLabel }} is best</div>
+        <div [style.color]="guessLabel" [style.backgroundColor]="color" class="guess-label">{{ guessLabel }}</div>
+        <div class="guess-message">Is the text easy to read?</div>
+        <a style="color: black;" [style.backgroundColor]="color" class="guess-button" (click)="updateAI(colorCode, false)">{{ guessLabel === 'black' ? 'Yes' : 'No' }}</a>
+        <a style="color: white;" [style.backgroundColor]="color" class="guess-button" (click)="updateAI(colorCode, true)">{{ guessLabel === 'white' ? 'Yes' : 'No' }}</a>
+      </div>
 
-<div *ngIf="color" class="guess-wrapper">
-  <div class="guess-message">The AI thinks {{ guessLabel }} is best</div>
-  <div [style.color]="guessLabel" [style.backgroundColor]="color" class="guess-label">{{ guessLabel }}</div>
-  <div class="guess-message">Is the text easy to read?</div>
-  <a style="color: black;" [style.backgroundColor]="color" class="guess-button" (click)="updateAI(colorCode, false)">{{ guessLabel === 'black' ? 'Yes' : 'No' }}</a>
-  <a style="color: white;" [style.backgroundColor]="color" class="guess-button" (click)="updateAI(colorCode, true)">{{ guessLabel === 'white' ? 'Yes' : 'No' }}</a>
+      <canvas #canvas1></canvas>
+      <canvas #canvas2></canvas>
+    </div>
+    <div class="col">
+
+      <table class="table">
+        <tr *ngFor="let row of colorMatrix">
+          <td *ngFor="let c of row" [style.backgroundColor]="c" [style.color]="guesslist[c]" (click)="swap(c, guesslist[c])">word</td>
+        </tr>
+      </table>
+
+    </div>
+  </div>
 </div>
