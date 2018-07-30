@@ -20,6 +20,15 @@ export class EncoderModelService {
     this.inputTokenIndex = this.getvocab(items);
     this.numEncoderTokens = this.inputTokenIndex.length;
 
+    localStorage.setItem(
+      'WidgetDataServiceData.vocab',
+      JSON.stringify(this.inputTokenIndex),
+    );
+    localStorage.setItem(
+      'WidgetDataServiceData.widgets',
+      JSON.stringify(widgets),
+    );
+
     this.model.add(
       tf.layers.conv1d({
         inputShape: [this.maxEncoderSeqLength, this.numEncoderTokens],
@@ -68,24 +77,24 @@ export class EncoderModelService {
 
     const ys = tf.oneHot(labels_ts, widgets.length);
 
-    console.log(xs.shape);
-    xs.print();
+    labels_ts.dispose();
+
+    const epochs = 101;
+    const sampleRate = epochs > 10 ? Math.floor(epochs / 10) : 1;
 
     const configCallbacks: tf.CustomCallbackConfig = {
       onBatchEnd: tf.nextFrame,
-      // onTrainEnd: logs => {
-      //   console.log('onTrainEnd', logs);
-      //   return tf.nextFrame();
-      // },
       onEpochEnd: (epoch: number, logs: tf.Logs) => {
-        callback(epoch, logs);
-        console.log('onEpochEnd', epoch, logs);
+        if (epoch % sampleRate === 0) {
+          callback(epoch, logs);
+        }
+        // console.log('onEpochEnd', epoch, logs);
         return tf.nextFrame();
       },
     };
 
     const config: tf.ModelFitConfig = {
-      epochs: 100,
+      epochs,
       shuffle: true,
       callbacks: configCallbacks,
       // validationSplit: 0.1,
@@ -121,6 +130,10 @@ export class EncoderModelService {
     });
 
     return guessed;
+  }
+
+  public async saveModel() {
+    return this.model.save('downloads:///widget-guess');
   }
 
   private encodeString(strings: string[]) {

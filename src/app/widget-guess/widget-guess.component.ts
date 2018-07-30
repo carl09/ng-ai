@@ -120,11 +120,17 @@ export class WidgetGuessComponent implements OnInit {
     this.createModel();
   }
 
+  public async save() {
+    await this.encoderModelService.saveModel();
+  }
+
   public async createModel() {
     this.items = this.widgetDataService.items();
 
     this.untrained = [];
     this.guessed = [];
+
+    this.clearCharts();
 
     await this.encoderModelService.createModel(this.items, this.widgets);
 
@@ -137,6 +143,17 @@ export class WidgetGuessComponent implements OnInit {
 
       this.chart1.update();
       this.chart2.update();
+
+      const r = this.encoderModelService.guess(this.items, this.widgets);
+
+      this.guessed = this.items.map((v, i) => {
+        return {
+          name: v.name,
+          widget: v.widget,
+          guess1: r[i].widget,
+          trained: true,
+        };
+      });
     });
 
     const results = this.encoderModelService.guess(this.items, this.widgets);
@@ -162,6 +179,17 @@ export class WidgetGuessComponent implements OnInit {
     //     guess1: results[i].widget,
     //   };
     // });
+  }
+
+  private clearCharts() {
+    this.chart1.data.labels = [];
+    this.chart2.data.labels = [];
+
+    (this.chart1.data.datasets[0].data as number[]) = [];
+    (this.chart2.data.datasets[0].data as number[]) = [];
+
+    this.chart1.update();
+    this.chart2.update();
   }
 
   public guess() {

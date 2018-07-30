@@ -13,22 +13,22 @@
                     </select>
                 </div>
                 <button type="submit" class="btn btn-primary" [disabled]="!profileForm.valid">Submit</button>
-
+                
             </form>
 
-
-            <button (click)="createModel()">Create Model</button>
-
-            <button (click)="guess()">Guess</button>
-
-   
-                <canvas #canvas1></canvas>
-                <canvas #canvas2></canvas>
-      
+            <div class="otherActions">
+            <button class="btn btn-secondary" (click)="createModel()">Create Model</button>
+                <button class="btn btn-secondary" (click)="save()">Save</button>
+            </div>
+            
+            <h3>Accuracy</h3>
+            <canvas #canvas1></canvas>
+            <h3>Loss</h3>
+            <canvas #canvas2></canvas>
 
         </div>
         <div class="col">
-            <h2>Results</h2>
+            <h3>Results</h3>
             <table class="table">
                 <tr *ngFor="let g of guessed">
                     <td>{{ g.name }}</td>
