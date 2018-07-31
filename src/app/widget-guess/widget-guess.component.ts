@@ -17,8 +17,10 @@ export class WidgetGuessComponent implements OnInit {
 
   public untrained: string[] = [];
 
-  @ViewChild('canvas1') canvas1: ElementRef;
-  @ViewChild('canvas2') canvas2: ElementRef;
+  @ViewChild('canvas1')
+  canvas1: ElementRef;
+  @ViewChild('canvas2')
+  canvas2: ElementRef;
 
   public chart1: Chart;
   public chart2: Chart;
@@ -181,17 +183,6 @@ export class WidgetGuessComponent implements OnInit {
     // });
   }
 
-  private clearCharts() {
-    this.chart1.data.labels = [];
-    this.chart2.data.labels = [];
-
-    (this.chart1.data.datasets[0].data as number[]) = [];
-    (this.chart2.data.datasets[0].data as number[]) = [];
-
-    this.chart1.update();
-    this.chart2.update();
-  }
-
   public guess() {
     this.items = this.widgetDataService.items();
 
@@ -236,5 +227,16 @@ export class WidgetGuessComponent implements OnInit {
     this.guess();
 
     this.profileForm.reset();
+  }
+
+  private clearCharts() {
+    this.chart1.data.labels = [];
+    this.chart2.data.labels = [];
+
+    (this.chart1.data.datasets[0].data as number[]) = [];
+    (this.chart2.data.datasets[0].data as number[]) = [];
+
+    this.chart1.update();
+    this.chart2.update();
   }
 }
