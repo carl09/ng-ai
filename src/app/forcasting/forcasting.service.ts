@@ -25,7 +25,9 @@ export class ForcastingService {
   private model: tf.Sequential;
 
   private placementFactors: string[];
-  private monthFactors: string[];
+
+  private daySpendFactor: number[];
+  // private monthFactors: string[];
 
   constructor() {}
 
@@ -34,26 +36,43 @@ export class ForcastingService {
       .map(x => x.placement)
       .filter((value, index, self) => self.indexOf(value) === index);
 
-    this.monthFactors = items
-      .map(x => x.index.substr(5, 2))
-      .filter((value, index, self) => self.indexOf(value) === index);
+    const days: number[] = [0, 0, 0, 0, 0, 0, 0];
+
+    items.forEach(x => {
+      const d = new Date(x.index);
+      days[d.getDay()] = days[d.getDay()] + x.units_sold;
+    });
+
+    const max_day = Math.max(...days); // 4
+    const min_day = Math.min(...days); // 1
+
+    this.daySpendFactor = days.map(x => {
+      // return this.map(x, min_day / 2, max_day * 2, 0, 1); // Math.round(this.map(x, min_day / 2, max_day * 2, 0, 1) * 100);
+      return Math.round(this.map(x, min_day, max_day, 0, 1) * 100);
+    });
 
     console.log(
       'monthFactors, placementItems ',
-      this.monthFactors,
+      // this.monthFactors,
+      days,
+      this.daySpendFactor,
       this.placementFactors,
     );
 
     this.model = tf.sequential();
 
     this.model.add(
-      tf.layers.dense({ inputDim: 2, units: 16, activation: 'relu' }),
+      tf.layers.dense({ inputDim: 6, units: 8, activation: 'relu' }),
     );
+
+    this.model.add(tf.layers.dense({ units: 8, activation: 'relu' }));
+
+    // this.model.add(tf.layers.dense({ units: 8, activation: 'relu' }));
 
     this.model.add(tf.layers.dense({ units: 1, activation: 'relu' }));
 
     // const modelOptimizer = tf.train.adamax(0.1);
-    const modelOptimizer = tf.train.adam(0.1);
+    const modelOptimizer = tf.train.adam(0.01);
     this.model.compile({
       loss: 'meanSquaredError',
       optimizer: modelOptimizer,
@@ -68,19 +87,9 @@ export class ForcastingService {
     testing: IForcastingItem[],
     callback: (epoch: number, logs: tf.Logs) => void,
   ) {
-    const data_xs = training.map(x => {
-      return [
-        this.monthFactors.indexOf(x.index.substr(5, 2)),
-        this.placementFactors.indexOf(x.placement),
-      ];
-    });
+    const data_xs = training.map(x => this.toX(x));
 
-    const test_data_xs = testing.map(x => {
-      return [
-        this.monthFactors.indexOf(x.index.substr(5, 2)),
-        this.placementFactors.indexOf(x.placement),
-      ];
-    });
+    const test_data_xs = testing.map(x => this.toX(x));
 
     const xs = tf.tensor2d(data_xs);
     const test_xs = tf.tensor2d(test_data_xs);
@@ -97,7 +106,7 @@ export class ForcastingService {
 
     console.log('training', { data_xs, labels_ts });
 
-    const epochs = 55;
+    const epochs = 51;
     const sampleRate = epochs > 10 ? Math.floor(epochs / 10) : 1;
     const configCallbacks: tf.CustomCallbackConfig = {
       onBatchEnd: tf.nextFrame,
@@ -124,38 +133,16 @@ export class ForcastingService {
     test_ys.dispose();
   }
 
-  public guessSimple(items: IForcastingItem): number {
-    const data_xs = [
-      this.monthFactors.indexOf(items.index.substr(5, 2)),
-      this.placementFactors.indexOf(items.placement),
-    ];
-
-    const xs = tf.tensor2d([data_xs]);
+  public guessSimple(item: IForcastingItem): number {
+    const xs = tf.tensor2d([this.toX(item)]);
 
     const guessResult = this.model.predict(xs) as tf.Tensor;
     const data = guessResult.dataSync();
     xs.dispose();
     guessResult.dispose();
-    console.log('guessSimple.data', data[0], items.units_sold);
+    // console.log('guessSimple.data', data[0], item.units_sold);
     return data[0];
   }
-
-  // public guess(items: IForcastingItem[]) {
-  // const guessed: IFormItem[] = [];
-  // items.forEach((item, i) => {
-  //   const xs = this.encodeString([item.name]);
-  //   const guessResult = (this.model.predict(xs) as tf.Tensor).argMax(-1);
-  //   const data = guessResult.dataSync();
-  //   xs.dispose();
-  //   guessResult.dispose();
-  //   // console.log(data);
-  //   guessed.push({
-  //     name: items[i].name,
-  //     widget: widgets[data[0]],
-  //   });
-  // });
-  // return guessed;
-  // }
 
   public getTraining(items: IForcastingItem[]): IForcastingItem[] {
     return items.filter(x => !x.index.startsWith('2017'));
@@ -173,5 +160,39 @@ export class ForcastingService {
     }
 
     return r;
+  }
+
+  private toX(item: IForcastingItem) {
+    // const index = Math.round(new Date(item.index).getTime() / 1000);
+    const yearArray = [2015, 2016, 2017];
+    const d = new Date(item.index);
+
+    const r = [
+      // yearArray.indexOf(d.getFullYear()), // d.getFullYear(), // % 2000,
+      d.getMonth(),
+      this.daySpendFactor[d.getDay()],
+      // d.getDay(),
+      // d.getDate(),
+      // this.monthFactors.indexOf(item.index.substr(5, 2)),
+      this.placementFactors.indexOf(item.placement),
+      item.temperature,
+      item.competing_brand_discount ? 1 : 0,
+      item.discount ? 1 : 0,
+    ];
+
+    // console.log(r);
+    return r;
+  }
+
+  private map(
+    input: number,
+    in_min: number,
+    in_max: number,
+    out_min: number,
+    out_max: number,
+  ): number {
+    return (
+      ((input - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min
+    );
   }
 }

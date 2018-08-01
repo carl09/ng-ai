@@ -46,10 +46,29 @@ export class ForcastingComponent implements OnInit {
 
           console.log(x.length, training.length, testing.length);
 
+          this.chart1.data.datasets.push({
+            borderColor: '#ff696d',
+            fill: false,
+            label: 'guess',
+          });
+
+          this.chart1.update();
+
+          testing.forEach(t => {
+            (this.chart1.data.datasets[1].data as number[]).push(0);
+            this.chart1.update();
+          });
+
           this.forcastingService
             .train(training, testing, (e, l) => {
               console.log(e, l);
               this.forcastingService.guessSimple(testing[0]);
+
+              testing.forEach((t, i) => {
+                const z = this.forcastingService.guessSimple(t);
+                this.chart1.data.datasets[1].data[i] = z;
+                this.chart1.update();
+              });
             })
             .then(() => {
               this.chart1.data.datasets.push({
@@ -60,11 +79,9 @@ export class ForcastingComponent implements OnInit {
 
               this.chart1.update();
 
-              testing.forEach(t => {
+              testing.forEach((t, i) => {
                 const z = this.forcastingService.guessSimple(t);
-                console.log(z);
-                (this.chart1.data.datasets[1].data as number[]).push(z);
-
+                this.chart1.data.datasets[1].data[i] = z;
                 this.chart1.update();
               });
             });
