@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import * as tf from '@tensorflow/tfjs';
 
 export interface IForcastingItem {
+  id: number;
   index: string;
   units_sold: number;
   discount: boolean;
@@ -62,14 +63,37 @@ export class ForcastingService {
     this.model = tf.sequential();
 
     this.model.add(
-      tf.layers.dense({ inputDim: 6, units: 8, activation: 'relu' }),
+      tf.layers.dense({
+        inputDim: 6,
+        units: 4,
+        activation: 'relu',
+        kernelInitializer: tf.initializers.constant({
+          value: 0.2,
+        }),
+      }),
     );
 
-    this.model.add(tf.layers.dense({ units: 8, activation: 'relu' }));
+    // this.model.add(
+    //   tf.layers.dense({
+    //     units: 8,
+    //     activation: 'relu',
+    //     kernelInitializer: tf.initializers.constant({
+    //       value: 0.2,
+    //     }),
+    //   }),
+    // );
 
     // this.model.add(tf.layers.dense({ units: 8, activation: 'relu' }));
 
-    this.model.add(tf.layers.dense({ units: 1, activation: 'relu' }));
+    this.model.add(
+      tf.layers.dense({
+        units: 1,
+        activation: 'relu',
+        kernelInitializer: tf.initializers.constant({
+          value: 0.2,
+        }),
+      }),
+    );
 
     // const modelOptimizer = tf.train.adamax(0.1);
     const modelOptimizer = tf.train.adam(0.01);
@@ -85,7 +109,7 @@ export class ForcastingService {
   public async train(
     training: IForcastingItem[],
     testing: IForcastingItem[],
-    callback: (epoch: number, logs: tf.Logs) => void,
+    callback?: (epoch: number, logs: tf.Logs) => void,
   ) {
     const data_xs = training.map(x => this.toX(x));
 
@@ -108,13 +132,22 @@ export class ForcastingService {
 
     const epochs = 51;
     const sampleRate = epochs > 10 ? Math.floor(epochs / 10) : 1;
+
     const configCallbacks: tf.CustomCallbackConfig = {
-      onBatchEnd: tf.nextFrame,
+      // onBatchEnd: () => (callback ? tf.nextFrame() : Promise.resolve()),
       onEpochEnd: (epoch: number, logs: tf.Logs) => {
-        if (epoch % sampleRate === 0) {
-          callback(epoch, logs);
+        if (callback) {
+          if (epoch % sampleRate === 0) {
+            callback(epoch, logs);
+          }
+          return tf.nextFrame();
         }
-        return tf.nextFrame();
+
+        if (epoch % sampleRate === 0) {
+          console.log('onEpochEnd', epoch, logs);
+        }
+
+        return Promise.resolve();
       },
     };
     const config: tf.ModelFitConfig = {
@@ -124,7 +157,17 @@ export class ForcastingService {
       validationData: [test_xs, test_ys],
     };
     const history = await this.model.fit(xs, ys, config);
-    console.log({ history });
+
+    // this.model.summary();
+
+    // console.log(this.model.weights);
+
+    // this.model.weights.forEach(l => {
+    //   const f = this.model.getLayer(undefined, l.id).weights;
+    //   console.log(f);
+    // });
+
+    // console.log({ history });
 
     xs.dispose();
     ys.dispose();
@@ -191,8 +234,6 @@ export class ForcastingService {
     out_min: number,
     out_max: number,
   ): number {
-    return (
-      ((input - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min
-    );
+    return ((input - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
   }
 }

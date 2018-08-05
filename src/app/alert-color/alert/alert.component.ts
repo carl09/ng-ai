@@ -1,22 +1,21 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-
-import * as tinycolor_ from 'tinycolor2';
+import * as tinycolor from 'tinycolor2';
 import { TrainingData } from '../../services/alert-color.service';
-const tinycolor: tinycolor = (tinycolor_ as any).default || tinycolor_;
 
 @Component({
   selector: 'app-alert',
   templateUrl: './alert.component.html',
 })
 export class AlertComponent {
-  @Input() public selectedColor: string;
-  @Input() public defaultColor: string;
-  @Input() public backgroundColor: string;
+  @Input()
+  public selectedColor: string;
+  @Input()
+  public defaultColor: string;
+  @Input()
+  public backgroundColor: string;
 
   @Output()
-  public readonly updateColor: EventEmitter<TrainingData> = new EventEmitter<
-    TrainingData
-  >();
+  public readonly updateColor: EventEmitter<TrainingData> = new EventEmitter<TrainingData>();
 
   public colorManage: string;
   public contrast: number;
@@ -56,10 +55,7 @@ export class AlertComponent {
   }
 
   private checkColor() {
-    const x = tinycolor.readability(
-      tinycolor(this.backgroundColor),
-      tinycolor(this.colorManage),
-    );
+    const x = tinycolor.readability(tinycolor(this.backgroundColor), tinycolor(this.colorManage));
     console.log(x);
     this.contrast = Math.round((x as any) as number);
   }

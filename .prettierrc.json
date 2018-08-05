@@ -2,5 +2,5 @@
   "$schema": "http://json.schemastore.org/prettierrc",
   "singleQuote": true,
   "trailingComma": "all",
-  "printWidth": 80
+  "printWidth": 100
 }
