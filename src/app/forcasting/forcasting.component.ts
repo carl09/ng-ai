@@ -31,29 +31,27 @@ export class ForcastingComponent implements OnInit {
 
       const graphData = this.forcastingService.getTesting(x);
 
+      this.chart1.data.datasets.push({
+        borderColor: '#3cba9f',
+        fill: false,
+        label: 'actual',
+      });
+
+      this.chart1.update();
+
+      graphData.forEach(t => {
+        this.chart1.data.labels.push(t.index);
+        (this.chart1.data.datasets[0].data as number[]).push(t.units_sold);
+
+        this.chart1.update();
+      });
+
       this.forcastingConvService.createModel(x).then(() => {
         const training = this.forcastingConvService.getTraining(x);
         const testing = this.forcastingConvService.getTesting(x);
 
         console.log('training', training);
         console.log('testing', testing);
-
-        // const z = this.forcastingConvService.guessSimple(training[0]);
-
-        this.chart1.data.datasets.push({
-          borderColor: '#3cba9f',
-          fill: false,
-          label: 'actual',
-        });
-
-        this.chart1.update();
-
-        graphData.forEach(t => {
-          this.chart1.data.labels.push(t.index);
-          (this.chart1.data.datasets[0].data as number[]).push(t.units_sold);
-
-          this.chart1.update();
-        });
 
         this.chart1.data.datasets.push({
           borderColor: '#ff696d',
@@ -71,7 +69,7 @@ export class ForcastingComponent implements OnInit {
         this.forcastingConvService
           .train(training, testing) // , (e, l) => {
           .then(() => {
-            this.chart1.data.datasets.push({
+            const chartIndex = this.chart1.data.datasets.push({
               borderColor: '#ff696d',
               fill: false,
               label: 'guess',
@@ -120,16 +118,6 @@ export class ForcastingComponent implements OnInit {
                 // nothing yet
               }
 
-              // d.getMonth(),
-              // this.daySpendFactor[d.getDay()],
-              // // d.getDay(),
-              // // d.getDate(),
-              // // this.monthFactors.indexOf(item.index.substr(5, 2)),
-              // this.placementFactors.indexOf(item.placement),
-              // item.temperature,
-              // item.competing_brand_discount ? 1 : 0,
-              // item.discount ? 1 : 0,
-
               const nextDay = this.forcastingConvService.guessSimple(inner);
 
               if (index < x.length - 1) {
@@ -153,7 +141,8 @@ export class ForcastingComponent implements OnInit {
             graphData.forEach((t, i) => {
               const guessIndex = guessResult.findIndex(z => z.id === t.id);
 
-              this.chart1.data.datasets[1].data[i] = guessResult[guessIndex].units_sold;
+              this.chart1.data.datasets[chartIndex - 1].data[i] =
+                guessResult[guessIndex].units_sold;
 
               // (this.chart1.data.datasets[1].data as number[]).push(
               //   guessResult[guessIndex].units_sold,
@@ -171,58 +160,28 @@ export class ForcastingComponent implements OnInit {
           });
       });
 
-      // this.forcastingService.createModel(x).then(() => {
-      //   const training = this.forcastingService.getTraining(x);
-      //   const testing = this.forcastingService.getTesting(x);
+      this.forcastingService.createModel(x).then(() => {
+        const training = this.forcastingService.getTraining(x);
+        const testing = this.forcastingService.getTesting(x);
 
-      //   this.chart1.data.datasets.push({
-      //     borderColor: '#3cba9f',
-      //     fill: false,
-      //     label: 'actual',
-      //   });
+        this.forcastingService
+          .train(training, testing) // , (e, l) => {
+          .then(() => {
+            const index = this.chart1.data.datasets.push({
+              borderColor: '#696dff',
+              fill: false,
+              label: 'guess with known data',
+            });
 
-      //   this.chart1.update();
+            this.chart1.update();
 
-      //   testing.forEach(t => {
-      //     this.chart1.data.labels.push(t.index);
-      //     (this.chart1.data.datasets[0].data as number[]).push(t.units_sold);
-
-      //     this.chart1.update();
-      //   });
-
-      //   console.log(x.length, training.length, testing.length);
-
-      //   this.chart1.data.datasets.push({
-      //     borderColor: '#ff696d',
-      //     fill: false,
-      //     label: 'guess',
-      //   });
-
-      //   this.chart1.update();
-
-      //   testing.forEach(t => {
-      //     (this.chart1.data.datasets[1].data as number[]).push(0);
-      //     this.chart1.update();
-      //   });
-
-      //   this.forcastingService
-      //     .train(training, testing) // , (e, l) => {
-      //     .then(() => {
-      //       this.chart1.data.datasets.push({
-      //         borderColor: '#ff696d',
-      //         fill: false,
-      //         label: 'guess',
-      //       });
-
-      //       this.chart1.update();
-
-      //       testing.forEach((t, i) => {
-      //         const z = this.forcastingService.guessSimple(t);
-      //         this.chart1.data.datasets[1].data[i] = z;
-      //         this.chart1.update();
-      //       });
-      //     });
-      // });
+            testing.forEach((t, i) => {
+              const z = this.forcastingService.guessSimple(t);
+              this.chart1.data.datasets[index - 1].data[i] = z;
+              this.chart1.update();
+            });
+          });
+      });
     });
   }
 }

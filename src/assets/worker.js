@@ -1,14 +1,12 @@
-// const global = window;
+// import * as tf from '@tensorflow/tfjs';
 
-// console.log(global);
+const window = self;
 
-import * as tf from '@tensorflow/tfjs';
-
-tf.setBackend('cpu');
-
-const ctx: Worker = self as any;
+importScripts('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.12.5');
 
 function createAndTrain() {
+  tf.setBackend('cpu');
+
   // importScripts('@tensorflow/tfjs');
 
   const model = tf.sequential();
@@ -65,6 +63,33 @@ function createAndTrain() {
   model.fit(xs, ys, config).then(x => {
     ctx.postMessage('I am a worker!');
   });
+}
+
+function _defineProperty(obj, key, value) {
+  return key in obj
+    ? Object.defineProperty(obj, key, {
+        value,
+        enumerable: true,
+        configurable: true,
+        writable: true,
+      })
+    : (obj[key] = value);
+}
+
+function _objectSpread(target) {
+  for (let i = 1; i < arguments.length; i += 1) {
+    const source = arguments[i] != null ? arguments[i] : {};
+    let ownKeys = Object.keys(source);
+    if (typeof Object.getOwnPropertySymbols === 'function') {
+      ownKeys = ownKeys.concat(
+        Object.getOwnPropertySymbols(source).filter(
+          sym => Object.getOwnPropertyDescriptor(source, sym).enumerable,
+        ),
+      );
+    }
+    ownKeys.forEach(key => _defineProperty(target, key, source[key]));
+  }
+  return target;
 }
 
 createAndTrain();

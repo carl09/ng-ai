@@ -48,7 +48,6 @@ export class ForcastingService {
     const min_day = Math.min(...days); // 1
 
     this.daySpendFactor = days.map(x => {
-      // return this.map(x, min_day / 2, max_day * 2, 0, 1); // Math.round(this.map(x, min_day / 2, max_day * 2, 0, 1) * 100);
       return Math.round(this.map(x, min_day, max_day, 0, 1) * 100);
     });
 
@@ -72,18 +71,6 @@ export class ForcastingService {
         }),
       }),
     );
-
-    // this.model.add(
-    //   tf.layers.dense({
-    //     units: 8,
-    //     activation: 'relu',
-    //     kernelInitializer: tf.initializers.constant({
-    //       value: 0.2,
-    //     }),
-    //   }),
-    // );
-
-    // this.model.add(tf.layers.dense({ units: 8, activation: 'relu' }));
 
     this.model.add(
       tf.layers.dense({
